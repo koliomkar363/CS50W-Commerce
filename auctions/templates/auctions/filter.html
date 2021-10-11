@@ -1,0 +1,50 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+  <h2>{{ category }}</h2>
+
+  {% for listing in listings %}
+  <div class="card mb-3" style="max-width: 1300px">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img
+          src="{{ listing.img_url }}"
+          alt="Listing Image"
+          width="300px"
+          height="200px"
+        />
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h4 class="card-title" style="color: black; font-weight: 500">
+            {{ listing.title }}
+          </h4>
+          <p class="card-text">{{ listing.description }}</p>
+          <p class="card-text"><strong>Price:</strong> ${{ listing.price }}</p>
+          {% load tz %}
+          <p class="card-text">
+            <small class="text-muted">Posted on {{ listing.created_at|localtime }}</small>
+          </p>
+          {% if user.is_authenticated %}
+              <p>
+                <a
+                  class="btn btn-outline-primary"
+                  href="{% url 'listing' listing.id %}"
+                  role="button"
+                >
+                  View
+                </a>
+              </p>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <h5>Sorry! No listings yet.</h5>
+  {% endfor %}
+
+  <a href="{% url 'categories' %}">Back</a>
+
+{% endblock %}

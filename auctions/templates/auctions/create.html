@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+  <form method="POST" style="margin-left: 20px">
+    {% csrf_token %} 
+    {{ form.as_p }}
+    <select name="category">
+      {% for category in categories %}
+      <option value="{{ category.id }}">{{ category }}</option>
+      {% endfor %}
+    </select>
+    <br />
+    <button type="submit" class="btn btn-outline-dark">Create</button>
+  </form>
+{% endblock %}

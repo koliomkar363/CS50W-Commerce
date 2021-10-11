@@ -1,0 +1,172 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+  <!-- Winner -->
+  {% if latest.user.id == user.id and latest.winner == True %}
+    <div class="alert alert-success" role="alert" style="text-align: center">
+      Congratulations! You have won {{ listing.title }} for ${{ latest.bids }}.
+    </div>
+  {% elif user == listing.user and listing.active == False %}
+    <div class="alert alert-danger" role="alert" style="text-align: center">
+      You have closed this auction!
+    </div>
+  {% elif user != listing.user and listing.active == False %}
+    <div class="alert alert-danger" role="alert" style="text-align: center">
+      Seller has closed this auction! "{{ latest.user }}" has placed the highest bid and won this auction.
+    </div>
+  {% endif %}
+
+  {% if status == "success" %}
+    <div class="alert alert-success" role="alert" style="text-align: center">
+      Bid placed successfully!
+    </div>
+  {% elif status == "failed" %}
+    <div class="alert alert-warning" role="alert" style="text-align: center">
+      Place a bid higher than the price displayed!
+    </div>
+  {% endif %}  
+
+  <div>
+    <h3>Listing: {{ listing.title }}</h3>
+    <img
+      src="{{ listing.img_url }}"
+      alt="listing image"
+      height="300px"
+      width="360px"
+    />
+    <p style="color: grey;font-weight: 600;">{{ listing.description }}</p>
+
+    {% if latest %}
+      <h3>${{ latest.bids }}</h3>
+    {% else %}
+      <h3>${{ listing.price }}</h3>
+      {% if user == listing.user %}
+        <p><small class="text-muted">0 bids so far.</small></p>
+      {% endif %}
+    {% endif %}
+
+    {% if user != listing.user and listing.active == True %}
+      <p>
+        <small class="text-muted">
+          {{ text }}
+          {% if latest.user == user %}
+            Your bid is the current bid.
+          {% endif %}
+        </small>
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- Check if user is the owner -->
+  {% if user != listing.user %}
+    <!-- Check if item is present in watchlist -->
+    {% if watchlist %}
+      <div>
+        <a
+          class="btn btn-outline-dark btn-sm"
+          href="{% url 'update' listing.id %}"
+          role="button"
+        >
+          Remove from watchlist
+        </a>
+      </div>
+    {% else %}
+      <div>
+        <a
+          class="btn btn-outline-dark btn-sm"
+          href="{% url 'update' listing.id %}"
+          role="button"
+        >
+          Add to watchlist
+        </a>
+      </div>
+    {% endif %}
+
+    {% if listing.active == True %}
+      <div>
+        <form action="{% url 'listing' listing.id %}" method="post">
+          {% csrf_token %}
+          <br />
+          <div>
+              <input 
+                type="number" 
+                name="bid" 
+                placeholder="Bid" 
+                max="999999" 
+                step="0.01"
+              />
+              <input class="btn btn-outline-info" type="submit" value="Place Bid" />
+          </div>
+        </form>
+      </div>
+    {% endif %}
+  {% elif listing.active == False %}
+    {% if latest %}
+      <h4 style="color: black; font-weight: 800;">
+        {{ latest.user }} has won the auction for this listing!
+      </h4>
+    {% else %}
+    <h4 style="color: red; font-weight: 800;">
+      No one has won this auction as there was no bid placed.
+    </h4>
+    {% endif %}
+  {% else %}
+    <a
+      class="btn btn-outline-danger"
+      href="{% url 'close' listing.id %}"
+      role="button"
+    >
+      Close the listing
+    </a>
+  {% endif %}
+
+    <br />
+
+  <div>
+    <h4>Details</h4>
+    <ul>
+      <li>Listed by: <span style="color: blue;">{{ listing.user }}</span></li>
+      <li>Category: {{ listing.category }}</li>
+    </ul>
+  </div>
+
+  {% if user != listing.user and listing.active == True %}
+    <div class="mb-3">
+      <form action="{% url 'comment' listing.id %}" method="POST">
+        {% csrf_token %} 
+        {{ form }}
+        <br />
+        <input
+          class="btn btn-outline-primary btn-sm"
+          type="submit"
+          value="Comment"
+        />
+      </form>
+    </div>
+  {% endif %}
+
+  <div class="card">
+    <div class="card-header">
+      Comments
+    </div>
+
+    {% for comment in comments %}
+      <div class="card-body">
+        <blockquote class="blockquote mb-0">
+          <p>{{ comment.comment }}</p>
+          <footer class="blockquote-footer">{{ comment.user }}</footer>
+        </blockquote>
+      </div>
+    {% empty %}
+      <div class="card-body">
+        <blockquote class="blockquote mb-0">
+          <p>No comments.</p>
+        </blockquote>
+      </div>
+    {% endfor %}
+
+  </div>
+  
+  <a href="{% url 'index' %}">Back</a>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "auctions/layout.html" %} 
+
+{% block body %}
+  <h2>Your Bids on Listings</h2>
+
+  {% for bid in bids %}
+    <div class="card mb-3" style="max-width: 1300px">
+      <div class="row g-0">
+        
+        <div class="col-md-4">
+          <img
+            src="{{ bid.listing.img_url }}"
+            alt="Listing Image"
+            width="300px"
+            height="200px"
+          />
+        </div>
+
+        <div class="col-md-8">
+          <div class="card-body">
+            <h4 class="card-title" style="color: black; font-weight: 500">
+              {{ bid.listing.title }}
+            </h4>
+            <p class="card-text">{{ bid.listing.description }}</p>
+            <p class="card-text">
+              <strong>Your Bid:</strong> ${{ bid.bids }}
+            </p>
+            <p class="card-text">
+              <small class="text-muted">Posted on {{ bid.listing.created_at }}</small>
+            </p>
+            {% if user.is_authenticated %}
+              <p>
+                <a
+                  class="btn btn-outline-primary"
+                  href="{% url 'listing' bid.listing.id %}"
+                  role="button"
+                >
+                  View
+                </a>
+              </p>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  {% empty %}
+    <h6 style="color: lightgrey;">Go to Active Listings page to place your bid.</h6>
+  {% endfor %} 
+
+{% endblock %}

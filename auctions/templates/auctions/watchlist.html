@@ -1,0 +1,48 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+  <h2>Your Watchlist</h2>
+
+  {% for watchlist in watchlists %}
+    <div class="card mb-3" style="max-width: 1300px">
+      <div class="row g-0">
+
+        <div class="col-md-4">
+          <img
+            src="{{ watchlist.listing.img_url }}"
+            alt="Listing Image"
+            width="300px"
+            height="200px"
+          />
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h4 class="card-title" style="color: black; font-weight: 500">
+              {{ watchlist.listing.title }}
+            </h4>
+            <p class="card-text">{{ watchlist.listing.description }}</p>
+            <p class="card-text"><strong>Price:</strong> ${{ watchlist.listing.price }}</p>
+            <p class="card-text">
+              <small class="text-muted">Posted on {{ watchlist.listing.created_at }}</small>
+            </p>
+
+            {% if user.is_authenticated %}
+              <p>
+                <a
+                  class="btn btn-outline-primary"
+                  href="{% url 'listing' watchlist.listing.id %}"
+                  role="button"
+                >
+                  View
+                </a>
+              </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+  <h5>Your watchlist is empty.</h5>
+  {% endfor %}
+
+{% endblock %}
